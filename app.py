@@ -83,7 +83,7 @@ class Menu:
                 clicked = True
             else:
                 pygame.draw.circle(surf, (190, 89, 135), (x, y), 35)
-        pygame.draw.circle(surf, 'black', (x, y), 35, 3)
+        pygame.draw.circle(surf, 'black', (x, y), 35, 5)
         surf.blit(self.pause_font.render(text, True, 'white'),
                   (x - 15, y - 25))
         return clicked
@@ -92,12 +92,12 @@ class Menu:
         pygame.draw.rect(screen, (32, 42, 68), [0, HEIGHT - 100, WIDTH, 100])
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
         pygame.draw.line(screen, 'black', (0, HEIGHT - 100),
-                         (WIDTH, HEIGHT - 100), 2)
+                         (WIDTH, HEIGHT - 100), 5)
         pygame.draw.line(screen, 'black', (250, HEIGHT - 100), (250, HEIGHT),
-                         2)
+                         5)
         pygame.draw.line(screen, 'black', (700, HEIGHT - 100), (700, HEIGHT),
-                         2)
-        pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 2)
+                         5)
+        pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
         screen.blit(self.header_font.render(f'Level: {level}', True, 'white'),
                     (10, HEIGHT - 75))
         screen.blit(
