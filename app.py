@@ -64,7 +64,7 @@ class Enemy:
                     (self.x_pos, self.y_pos))
         act_len = len(active_string)
         if active_string == self.text[:act_len]:
-            screen.blit(font.render(active_string, True, 'green'),
+            screen.blit(font.render(active_string, True, (255, 198, 0)),
                         (self.x_pos, self.y_pos))
 
     def update(self):
@@ -92,7 +92,7 @@ class Menu:
         return clicked
 
     def draw_hud(self, level, active_string, score, high_score, lives):
-        pygame.draw.rect(screen, (32, 42, 68), [0, HEIGHT - 100, WIDTH, 100])
+        pygame.draw.rect(screen, (255, 198, 0), [0, HEIGHT - 100, WIDTH, 100])  #(32, 42, 68)
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
         pygame.draw.line(screen, 'black', (0, HEIGHT - 100),
                          (WIDTH, HEIGHT - 100), 5)
@@ -101,10 +101,10 @@ class Menu:
         pygame.draw.line(screen, 'black', (700, HEIGHT - 100), (700, HEIGHT),
                          5)
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
-        screen.blit(self.header_font.render(f'Level: {level}', True, 'white'),
+        screen.blit(self.header_font.render(f'Level: {level}', True, 'black'),
                     (10, HEIGHT - 75))
         screen.blit(
-            self.header_font.render(f'"{active_string}"', True, 'white'),
+            self.header_font.render(f'"{active_string}"', True, 'black'),
             (270, HEIGHT - 75))
         screen.blit(self.banner_font.render(f'Score: {score}', True, 'black'),
                     (250, 10))
@@ -137,7 +137,7 @@ class Menu:
             if btn:
                 changes[i] = not changes[i]
             if choices[i]:
-                pygame.draw.circle(surface, 'green', (160 + (i * 80), 350), 35,
+                pygame.draw.circle(surface, (255, 198, 0), (160 + (i * 80), 350), 35,
                                    5)
 
         screen.blit(surface, (0, 0))
