@@ -45,6 +45,9 @@ class Dataset:
             ind_sel = random.choice(include)
             index = random.randint(ind_sel[0], ind_sel[1] - 1)
             text = self.wordlist[index].lower()
+            if random.random() < 0.3:
+                j = random.randint(0, len(text) - 1)
+                text = text[:j] + text[j].upper() + text[j + 1:]
             word_objs.append(Enemy(text, speed, y_pos, x_pos))
         return word_objs
 
