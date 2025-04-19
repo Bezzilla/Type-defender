@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Typing Racer!')
 timer = pygame.time.Clock()
-fps = 60
+
 
 
 class Dataset:
@@ -180,7 +180,7 @@ class Game:
         running = True
         while running:
             screen.fill('gray')
-            timer.tick(fps)
+            timer.tick(60)
             pause_click = self.menu.draw_hud(self.level, self.active_string,
                                              self.score, self.high_score,
                                              self.lives)
