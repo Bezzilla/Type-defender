@@ -156,7 +156,7 @@ class Game:
         self.active_string = ''
         self.submit = ''
         self.word_objects = []
-        self.pz = True
+        self.pause = True
         self.new_level = True
         self.choices = [False, True, False, False, False, False, False]
 
@@ -185,29 +185,29 @@ class Game:
                                              self.score, self.high_score,
                                              self.lives)
 
-            if self.pz:
+            if self.pause:
                 resume, changes, quit_btn = self.menu.draw_pause(self.choices)
                 if resume:
-                    self.pz = False
+                    self.pause = False
                 if quit_btn:
                     self.save_high_score()
                     break
                 self.choices = changes
 
-            if self.new_level and not self.pz:
+            if self.new_level and not self.pause:
                 self.word_objects = self.dataset.get_words(self.level,
                                                            self.choices)
                 self.new_level = False
             else:
                 for word in self.word_objects[:]:
                     word.draw(self.font, self.active_string)
-                    if not self.pz:
+                    if not self.pause:
                         word.update()
                     if word.x_pos < -200:
                         self.word_objects.remove(word)
                         self.lives -= 1
 
-            if len(self.word_objects) <= 0 and not self.pz:
+            if len(self.word_objects) <= 0 and not self.pause:
                 self.level += 1
                 self.new_level = True
 
@@ -221,7 +221,7 @@ class Game:
                     running = False
 
                 if event.type == pygame.KEYDOWN:
-                    if not self.pz:
+                    if not self.pause:
                         if event.unicode.isalpha():
                             self.active_string += event.unicode
                         if event.key == pygame.K_BACKSPACE:
@@ -230,16 +230,16 @@ class Game:
                             self.submit = self.active_string
                             self.active_string = ''
                     if event.key == pygame.K_ESCAPE:
-                        self.pz = not self.pz
+                        self.pause = not self.pause
 
-                if event.type == pygame.MOUSEBUTTONUP and self.pz and event.button == 1:
+                if event.type == pygame.MOUSEBUTTONUP and self.pause and event.button == 1:
                     self.choices = changes
 
             if pause_click:
-                self.pz = True
+                self.pause = True
 
             if self.lives < 0:
-                self.pz = True
+                self.pause = True
                 self.level = 1
                 self.lives = 5
                 self.word_objects = []
