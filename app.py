@@ -9,7 +9,7 @@ pygame.init()
 
 WIDTH, HEIGHT = 800, 600  # WIDTH, HEIGHT = 1000, 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Typing Racer!')
+pygame.display.set_caption('Type Defender')
 timer = pygame.time.Clock()
 
 
