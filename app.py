@@ -7,7 +7,8 @@ from nltk.corpus import words
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 600  # WIDTH, HEIGHT = 1000, 800
+# WIDTH, HEIGHT = 800, 600  # WIDTH, HEIGHT = 1000, 800
+WIDTH, HEIGHT = 1000, 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Type Defender')
 timer = pygame.time.Clock()
@@ -85,7 +86,8 @@ class Tracker:
         return self.total_word_length / self.correct_words if self.correct_words > 0 else 0
 
     def average_word_time(self):
-        return sum(self.word_times)/len(self.word_times) if self.word_times else 0
+        return sum(self.word_times) / len(
+            self.word_times) if self.word_times else 0
 
     def total_time_played(self):
         return time.time() - self.start_time
@@ -117,6 +119,7 @@ class Tracker:
                 self.words_shown,
                 self.words_missed
             ])
+
 
 # Class responsible for managing word data used in the game
 class Dataset:
@@ -207,59 +210,56 @@ class Menu:
 
     # Draws the HUD including level, score, and lives
     def draw_hud(self, level, active_string, score, high_score, lives):
-        pygame.draw.rect(screen, (255, 198, 0),
-                         [0, HEIGHT - 100, WIDTH, 100])
+        pygame.draw.rect(screen, (255, 198, 0), [0, HEIGHT - 100, WIDTH, 100])
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
-        pygame.draw.line(screen, 'black', (0, HEIGHT - 100),
-                         (WIDTH, HEIGHT - 100), 5)
-        pygame.draw.line(screen, 'black', (250, HEIGHT - 100), (250, HEIGHT),
-                         5)
-        pygame.draw.line(screen, 'black', (700, HEIGHT - 100), (700, HEIGHT),
-                         5)
+        pygame.draw.line(screen, 'black', (0, HEIGHT - 100),(WIDTH, HEIGHT - 100), 5)
+        pygame.draw.line(screen, 'black', (300, HEIGHT - 100), (300, HEIGHT),5)
+        pygame.draw.line(screen, 'black', (800, HEIGHT - 100), (800, HEIGHT),5)
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
-        screen.blit(self.header_font.render(f'Level: {level}', True, 'black'),
-                    (10, HEIGHT - 75))
-        screen.blit(
-            self.header_font.render(f'"{active_string}"', True, 'black'),
-            (270, HEIGHT - 75))
-        screen.blit(self.banner_font.render(f'Score: {score}', True, 'black'),
-                    (250, 10))
-        screen.blit(
-            self.banner_font.render(f'Best: {high_score}', True, 'black'),
-            (550, 10))
-        screen.blit(self.banner_font.render(f'Lives: {lives}', True, 'black'),
-                    (10, 10))
-        return self.draw_button(748, HEIGHT - 52, 'II', screen)
+        screen.blit(self.header_font.render(f'Level: {level}', True, 'black'),(10, HEIGHT - 75))
+        screen.blit(self.header_font.render(f'"{active_string}"', True, 'black'),(320, HEIGHT - 75))
+        screen.blit(self.banner_font.render(f'Score: {score}', True, 'black'),(300, 10))
+        screen.blit( self.banner_font.render(f'Best: {high_score}', True, 'black'),(650, 10))
+        screen.blit(self.banner_font.render(f'Lives: {lives}', True, 'black'),(10, 10))
 
-    # Draws the pause menu and returns buttons clicked and toggle states
+        return self.draw_button(948, HEIGHT - 52, 'II', screen)
+
     def draw_pause(self, choices):
         surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 300], 0, 5)
-        pygame.draw.rect(surface, (0, 0, 0, 200), [100, 100, 600, 300], 5, 5)
-        resume = self.draw_button(160, 200, '>', surface)
-        quit_btn = self.draw_button(410, 200, 'X', surface)
-        surface.blit(self.header_font.render('MENU', True, 'white'),
-                     (110, 110))
-        surface.blit(self.header_font.render('PLAY!', True, 'white'),
-                     (210, 175))
-        surface.blit(self.header_font.render('QUIT', True, 'white'),
-                     (450, 175))
-        surface.blit(
-            self.header_font.render('Active Letter Lengths:', True, 'white'),
-            (110, 250))
+        pygame.draw.rect(surface, (0, 0, 0, 100), [200, 200, 600, 400], 0, 5)
+        pygame.draw.rect(surface, (0, 0, 0, 200), [200, 200, 600, 400], 5, 5)
+        resume = self.draw_button(260, 300, '>', surface)
+        quit_btn = self.draw_button(610, 300, 'X',surface)
+        surface.blit(self.header_font.render('MENU', True, 'white'),(210, 210))
+        surface.blit(self.header_font.render('PLAY!', True, 'white'),(310, 275))
+        surface.blit(self.header_font.render('QUIT', True, 'white'),(650, 275))
+        surface.blit(self.header_font.render('Active Letter Lengths:', True, 'white'),(210, 350))
 
         changes = copy.deepcopy(choices)
         for i in range(len(choices)):
-            btn = self.draw_button(160 + (i * 80), 350, str(i + 2), surface)
+            btn = self.draw_button(260 + (i * 80), 450, str(i + 2),surface)
             if btn:
                 changes[i] = not changes[i]
             if choices[i]:
-                pygame.draw.circle(surface, (255, 198, 0),
-                                   (160 + (i * 80), 350), 35,
-                                   5)
+                pygame.draw.circle(surface, (255, 198, 0),(260 + (i * 80), 450), 35, 5)
 
         screen.blit(surface, (0, 0))
         return resume, changes, quit_btn
+
+    def draw_stats_button(self, x, y):
+        clicked = False
+        rect = pygame.draw.rect(screen, (45, 89, 135), [x, y, 200, 50], 0, 10)
+        if rect.collidepoint(pygame.mouse.get_pos()):
+            if pygame.mouse.get_pressed()[0]:
+                pygame.draw.rect(screen, (190, 35, 35), [x, y, 200, 50], 0, 10)
+                clicked = True
+            else:
+                pygame.draw.rect(screen, (190, 89, 135), [x, y, 200, 50], 0,
+                                 10)
+        pygame.draw.rect(screen, 'black', [x, y, 200, 50], 3, 10)
+        screen.blit(self.header_font.render('Show Stats', True, 'white'),
+                    (x + 20, y + 5))
+        return clicked
 
 
 # Main game class: runs the game loop and manages state
@@ -308,6 +308,7 @@ class Game:
     # Main game loop
     def run(self):
         running = True
+        changes = None
         while running:
             screen.fill('gray')
             timer.tick(60)

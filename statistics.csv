@@ -1,2 +1,4 @@
 Net_WPM,Gross_WPM,KPM,Word_Accuracy,Char_Accuracy,Error_Rate,Score,Total_Words_Typed,Correct_Words,Incorrect_Words,Characters_Typed,Correct_Keystrokes,Backspace_Count,Longest_Streak,Average_Word_Length,Average_Word_Time,Total_Time_Played,Words_Shown,Words_Missed
 15.01,17.74,185.58,84.62,30.23,69.77,1030,11,11,2,33,39,7,10,3.0,3.76,43.97,21,6
+7.94,7.94,216.42,100.0,23.17,76.83,359,4,4,0,12,19,27,4,3.0,4.801,30.22,10,6
+21.49,24.35,213.46,88.24,34.04,65.96,1164,15,15,2,45,48,8,8,3.0,2.749,41.88,21,6
