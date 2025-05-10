@@ -11,13 +11,14 @@ pygame.display.set_caption('Typing Racer!')
 timer = pygame.time.Clock()
 
 
-
+# Class responsible for managing word data used in the game
 class Dataset:
     def __init__(self):
-        self.wordlist = words.words()
-        self.wordlist.sort(key=len)
-        self.len_indexes = self.get_length_indexes()
+        self.wordlist = words.words()  # Load English words from nltk
+        self.wordlist.sort(key=len)  # Sort words by length
+        self.len_indexes = self.get_length_indexes()  # Index positions where word length changes
 
+    # Returns a list of indexes where word length increases in the sorted list
     def get_length_indexes(self):
         len_indexes = []
         length = 1
@@ -28,6 +29,7 @@ class Dataset:
         len_indexes.append(len(self.wordlist))
         return len_indexes
 
+    # Generates a list of Enemy word objects based on the level and selected word lengths
     def get_words(self, level, choices):
         word_objs = []
         include = []
@@ -52,6 +54,7 @@ class Dataset:
         return word_objs
 
 
+# Class representing a falling word (enemy) on the screen
 class Enemy:
     def __init__(self, text, speed, y_pos, x_pos):
         self.text = text
@@ -59,6 +62,7 @@ class Enemy:
         self.y_pos = y_pos
         self.x_pos = x_pos
 
+    # Draw the word and highlight matching prefix
     def draw(self, font, active_string):
         screen.blit(font.render(self.text, True, 'black'),
                     (self.x_pos, self.y_pos))
@@ -67,16 +71,19 @@ class Enemy:
             screen.blit(font.render(active_string, True, (255, 198, 0)),
                         (self.x_pos, self.y_pos))
 
+    # Move the word left based on its speed
     def update(self):
         self.x_pos -= self.speed
 
 
+# Class responsible for drawing all menu and UI elements
 class Menu:
     def __init__(self):
-        self.header_font = pygame.font.SysFont(None, 50)
-        self.pause_font = pygame.font.SysFont(None, 38)
-        self.banner_font = pygame.font.SysFont(None, 50)  # 28
+        self.header_font = pygame.font.SysFont('CALLUNA', 50)
+        self.pause_font = pygame.font.SysFont('CALLUNA', 38)
+        self.banner_font = pygame.font.SysFont('CALLUNA', 50)
 
+    # Draws a circle button and returns True if clicked
     def draw_button(self, x, y, text, surf):
         clicked = False
         cir = pygame.draw.circle(surf, (45, 89, 135), (x, y), 35)
@@ -91,8 +98,10 @@ class Menu:
                   (x - 15, y - 25))
         return clicked
 
+    # Draws the HUD including level, score, and lives
     def draw_hud(self, level, active_string, score, high_score, lives):
-        pygame.draw.rect(screen, (255, 198, 0), [0, HEIGHT - 100, WIDTH, 100])  #(32, 42, 68)
+        pygame.draw.rect(screen, (255, 198, 0),
+                         [0, HEIGHT - 100, WIDTH, 100])
         pygame.draw.rect(screen, 'black', [0, 0, WIDTH, HEIGHT], 5)
         pygame.draw.line(screen, 'black', (0, HEIGHT - 100),
                          (WIDTH, HEIGHT - 100), 5)
@@ -115,6 +124,7 @@ class Menu:
                     (10, 10))
         return self.draw_button(748, HEIGHT - 52, 'II', screen)
 
+    # Draws the pause menu and returns buttons clicked and toggle states
     def draw_pause(self, choices):
         surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 300], 0, 5)
@@ -137,37 +147,42 @@ class Menu:
             if btn:
                 changes[i] = not changes[i]
             if choices[i]:
-                pygame.draw.circle(surface, (255, 198, 0), (160 + (i * 80), 350), 35,
+                pygame.draw.circle(surface, (255, 198, 0),
+                                   (160 + (i * 80), 350), 35,
                                    5)
 
         screen.blit(surface, (0, 0))
         return resume, changes, quit_btn
 
 
+# Main game class: runs the game loop and manages state
 class Game:
     def __init__(self):
-        self.dataset = Dataset()
-        self.menu = Menu()
+        self.dataset = Dataset()  # Manages word data
+        self.menu = Menu()  # Manages UI and menu
         self.font = pygame.font.SysFont(None, 48)
         self.score = 0
         self.high_score = self.load_high_score()
         self.level = 1
         self.lives = 5
-        self.active_string = ''
-        self.submit = ''
-        self.word_objects = []
+        self.active_string = ''  # Current typed input
+        self.submit = ''  # Word submitted (Enter or Space)
+        self.word_objects = []  # List of active Enemy objects
         self.pause = True
         self.new_level = True
-        self.choices = [False, True, False, False, False, False, False]
+        self.choices = [False, True, False, False, False, False, False]  # Word lengths toggle
 
+    # Reads the high score from file
     def load_high_score(self):
         with open('high_score.txt', 'r') as f:
             return int(f.readline())
 
+    # Writes the high score to file
     def save_high_score(self):
         with open('high_score.txt', 'w') as f:
             f.write(str(self.high_score))
 
+    # Check if submitted word matches any enemy word
     def check_answer(self):
         for wrd in self.word_objects:
             if wrd.text == self.submit:
@@ -176,6 +191,7 @@ class Game:
                 self.word_objects.remove(wrd)
                 break
 
+    # Main game loop
     def run(self):
         running = True
         while running:
