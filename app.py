@@ -3,7 +3,6 @@ import random
 import copy
 import time
 import csv
-import os
 from nltk.corpus import words
 
 pygame.init()
@@ -13,39 +12,110 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Typing Racer!')
 timer = pygame.time.Clock()
 
+
 class Tracker:
     def __init__(self):
         self.start_time = time.time()
         self.words_typed = 0
-        self.errors = 0
+        self.correct_words = 0
+        self.incorrect_words = 0
+        self.total_keystrokes = 0
+        self.correct_keystrokes = 0
+        self.backspace_count = 0
+        self.word_streak = 0
+        self.longest_streak = 0
+        self.chars_typed = 0
+        self.words_shown = 0
+        self.words_missed = 0
+        self.total_word_length = 0
+        self.last_word_time = self.start_time
+        self.word_times = []
 
     def add_word(self, word):
         self.words_typed += 1
+        self.correct_words += 1
+        self.word_streak += 1
+        self.longest_streak = max(self.word_streak, self.longest_streak)
+        self.chars_typed += len(word)
+        self.total_word_length += len(word)
+        self.word_times.append(time.time() - self.last_word_time)
+        self.last_word_time = time.time()
 
     def add_error(self):
-        self.errors += 1
+        self.incorrect_words += 1
+        self.word_streak = 0
 
-    def calculate_wpm(self):
-        elapsed = (time.time() - self.start_time) / 60  # minutes
-        return self.words_typed / elapsed if elapsed > 0 else 0
+    def add_keystroke(self, correct=False, is_backspace=False):
+        self.total_keystrokes += 1
+        if is_backspace:
+            self.backspace_count += 1
+        elif correct:
+            self.correct_keystrokes += 1
+
+    def add_shown_word(self):
+        self.words_shown += 1
+
+    def add_missed_word(self):
+        self.words_missed += 1
+
+    def calculate_wpm(self, net=True):
+        elapsed = (time.time() - self.start_time) / 60
+        if net:
+            return self.correct_words / elapsed if elapsed > 0 else 0
+        return (self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
+
+    def calculate_kpm(self):
+        elapsed = (time.time() - self.start_time) / 60
+        return self.total_keystrokes / elapsed if elapsed > 0 else 0
+
+    def accuracy(self, word_level=False):
+        if word_level:
+            total_attempts = self.correct_words + self.incorrect_words
+            return (self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
+        else:
+            total_chars = self.total_keystrokes - self.backspace_count
+            return (self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
 
     def error_rate(self):
-        total_attempts = self.words_typed + self.errors
-        return (self.errors / total_attempts) * 100 if total_attempts > 0 else 0
+        total_chars = self.total_keystrokes - self.backspace_count
+        errors = total_chars - self.correct_keystrokes
+        return (errors / total_chars) * 100 if total_chars > 0 else 0
+
+    def average_word_length(self):
+        return self.total_word_length / self.correct_words if self.correct_words > 0 else 0
+
+    def average_word_time(self):
+        return sum(self.word_times)/len(self.word_times) if self.word_times else 0
+
+    def total_time_played(self):
+        return time.time() - self.start_time
 
     def reset(self):
         self.__init__()
 
     def save_to_csv(self, score):
-        file_exists = os.path.isfile('player_stat.csv')
-        with open('player_stat.csv', 'a', newline='') as f:
+        with open('statistics.csv', 'a', newline='') as f:
             writer = csv.writer(f)
-            if not file_exists:
-                writer.writerow(['WPM', 'Error Rate (%)', 'Score'])
             writer.writerow([
-                round(self.calculate_wpm(), 2),
+                round(self.calculate_wpm(net=True), 2),
+                round(self.calculate_wpm(net=False), 2),
+                round(self.calculate_kpm(), 2),
+                round(self.accuracy(word_level=True), 2),
+                round(self.accuracy(word_level=False), 2),
                 round(self.error_rate(), 2),
-                score
+                score,
+                self.words_typed,
+                self.correct_words,
+                self.incorrect_words,
+                self.chars_typed,
+                self.correct_keystrokes,
+                self.backspace_count,
+                self.longest_streak,
+                round(self.average_word_length(), 2),
+                round(self.average_word_time(), 3),
+                round(self.total_time_played(), 2),
+                self.words_shown,
+                self.words_missed
             ])
 
 # Class responsible for managing word data used in the game
@@ -208,7 +278,8 @@ class Game:
         self.word_objects = []  # List of active Enemy objects
         self.pause = True
         self.new_level = True
-        self.choices = [False, True, False, False, False, False, False]  # Word lengths toggle
+        self.choices = [False, True, False, False, False, False,
+                        False]  # Word lengths toggle
 
     # Reads the high score from file
     def load_high_score(self):
@@ -256,6 +327,8 @@ class Game:
             if self.new_level and not self.pause:
                 self.word_objects = self.dataset.get_words(self.level,
                                                            self.choices)
+                for _ in self.word_objects:  # Track all newly spawned words
+                    self.tracker.add_shown_word()
                 self.new_level = False
             else:
                 for word in self.word_objects[:]:
@@ -263,6 +336,7 @@ class Game:
                     if not self.pause:
                         word.update()
                     if word.x_pos < -200:
+                        self.tracker.add_missed_word()  # Track expired words
                         self.word_objects.remove(word)
                         self.lives -= 1
 
@@ -280,14 +354,27 @@ class Game:
                     running = False
 
                 if event.type == pygame.KEYDOWN:
-                    if not self.pause:
+                    # Track all keystrokes
+                    if event.key == pygame.K_BACKSPACE:
+                        self.tracker.add_keystroke(is_backspace=True)
+                        self.active_string = self.active_string[:-1]
+                    elif not self.pause:
+                        self.tracker.add_keystroke()  # Count all keypresses
+
                         if event.unicode.isalpha():
+                            # Check if keystroke matches any active word
+                            is_correct = any(
+                                word.text.startswith(
+                                    self.active_string + event.unicode)
+                                for word in self.word_objects
+                            )
+                            self.tracker.add_keystroke(correct=is_correct)
                             self.active_string += event.unicode
-                        if event.key == pygame.K_BACKSPACE:
-                            self.active_string = self.active_string[:-1]
+
                         if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                             self.submit = self.active_string
                             self.active_string = ''
+
                     if event.key == pygame.K_ESCAPE:
                         self.pause = not self.pause
 
