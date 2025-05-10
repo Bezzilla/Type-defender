@@ -1,15 +1,52 @@
 import pygame
 import random
 import copy
+import time
+import csv
+import os
 from nltk.corpus import words
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 800, 600  # WIDTH, HEIGHT = 1000, 800
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Typing Racer!')
 timer = pygame.time.Clock()
 
+class Tracker:
+    def __init__(self):
+        self.start_time = time.time()
+        self.words_typed = 0
+        self.errors = 0
+
+    def add_word(self, word):
+        self.words_typed += 1
+
+    def add_error(self):
+        self.errors += 1
+
+    def calculate_wpm(self):
+        elapsed = (time.time() - self.start_time) / 60  # minutes
+        return self.words_typed / elapsed if elapsed > 0 else 0
+
+    def error_rate(self):
+        total_attempts = self.words_typed + self.errors
+        return (self.errors / total_attempts) * 100 if total_attempts > 0 else 0
+
+    def reset(self):
+        self.__init__()
+
+    def save_to_csv(self, score):
+        file_exists = os.path.isfile('player_stat.csv')
+        with open('player_stat.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(['WPM', 'Error Rate (%)', 'Score'])
+            writer.writerow([
+                round(self.calculate_wpm(), 2),
+                round(self.error_rate(), 2),
+                score
+            ])
 
 # Class responsible for managing word data used in the game
 class Dataset:
@@ -160,6 +197,7 @@ class Game:
     def __init__(self):
         self.dataset = Dataset()  # Manages word data
         self.menu = Menu()  # Manages UI and menu
+        self.tracker = Tracker()
         self.font = pygame.font.SysFont(None, 48)
         self.score = 0
         self.high_score = self.load_high_score()
@@ -184,12 +222,17 @@ class Game:
 
     # Check if submitted word matches any enemy word
     def check_answer(self):
+        matched = False
         for wrd in self.word_objects:
             if wrd.text == self.submit:
                 points = wrd.speed * len(wrd.text) * 10 * (len(wrd.text) / 4)
                 self.score += int(points)
                 self.word_objects.remove(wrd)
+                matched = True
+                self.tracker.add_word(wrd.text)
                 break
+        if not matched:
+            self.tracker.add_error()
 
     # Main game loop
     def run(self):
@@ -255,6 +298,8 @@ class Game:
                 self.pause = True
 
             if self.lives < 0:
+                self.tracker.save_to_csv(self.score)
+                self.tracker.reset()
                 self.pause = True
                 self.level = 1
                 self.lives = 5
