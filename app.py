@@ -1,9 +1,8 @@
 import pygame
-import random
 import copy
-import time
-import csv
+import random
 from nltk.corpus import words
+from Tracker import Tracker
 
 pygame.init()
 
@@ -14,114 +13,6 @@ pygame.display.set_caption('Type Defender')
 timer = pygame.time.Clock()
 
 
-class Tracker:
-    def __init__(self):
-        self.start_time = time.time()
-        self.words_typed = 0
-        self.correct_words = 0
-        self.incorrect_words = 0
-        self.total_keystrokes = 0
-        self.correct_keystrokes = 0
-        self.backspace_count = 0
-        self.word_streak = 0
-        self.longest_streak = 0
-        self.chars_typed = 0
-        self.words_shown = 0
-        self.words_missed = 0
-        self.total_word_length = 0
-        self.last_word_time = self.start_time
-        self.word_times = []
-
-    def add_word(self, word):
-        self.words_typed += 1
-        self.correct_words += 1
-        self.word_streak += 1
-        self.longest_streak = max(self.word_streak, self.longest_streak)
-        self.chars_typed += len(word)
-        self.total_word_length += len(word)
-        self.word_times.append(time.time() - self.last_word_time)
-        self.last_word_time = time.time()
-
-    def add_error(self):
-        self.incorrect_words += 1
-        self.word_streak = 0
-
-    def add_keystroke(self, correct=False, is_backspace=False):
-        self.total_keystrokes += 1
-        if is_backspace:
-            self.backspace_count += 1
-        elif correct:
-            self.correct_keystrokes += 1
-
-    def add_shown_word(self):
-        self.words_shown += 1
-
-    def add_missed_word(self):
-        self.words_missed += 1
-
-    def calculate_wpm(self, net=True):
-        elapsed = (time.time() - self.start_time) / 60
-        if net:
-            return self.correct_words / elapsed if elapsed > 0 else 0
-        return (self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
-
-    def calculate_kpm(self):
-        elapsed = (time.time() - self.start_time) / 60
-        return self.total_keystrokes / elapsed if elapsed > 0 else 0
-
-    def accuracy(self, word_level=False):
-        if word_level:
-            total_attempts = self.correct_words + self.incorrect_words
-            return (self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
-        else:
-            total_chars = self.total_keystrokes - self.backspace_count
-            return (self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
-
-    def error_rate(self):
-        total_chars = self.total_keystrokes - self.backspace_count
-        errors = total_chars - self.correct_keystrokes
-        return (errors / total_chars) * 100 if total_chars > 0 else 0
-
-    def average_word_length(self):
-        return self.total_word_length / self.correct_words if self.correct_words > 0 else 0
-
-    def average_word_time(self):
-        return sum(self.word_times) / len(
-            self.word_times) if self.word_times else 0
-
-    def total_time_played(self):
-        return time.time() - self.start_time
-
-    def reset(self):
-        self.__init__()
-
-    def save_to_csv(self, score):
-        with open('statistics.csv', 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                round(self.calculate_wpm(net=True), 2),
-                round(self.calculate_wpm(net=False), 2),
-                round(self.calculate_kpm(), 2),
-                round(self.accuracy(word_level=True), 2),
-                round(self.accuracy(word_level=False), 2),
-                round(self.error_rate(), 2),
-                score,
-                self.words_typed,
-                self.correct_words,
-                self.incorrect_words,
-                self.chars_typed,
-                self.correct_keystrokes,
-                self.backspace_count,
-                self.longest_streak,
-                round(self.average_word_length(), 2),
-                round(self.average_word_time(), 3),
-                round(self.total_time_played(), 2),
-                self.words_shown,
-                self.words_missed
-            ])
-
-
-# Class responsible for managing word data used in the game
 class Dataset:
     def __init__(self):
         self.wordlist = words.words()  # Load English words from nltk
@@ -230,6 +121,7 @@ class Menu:
         pygame.draw.rect(surface, (0, 0, 0, 200), [200, 200, 600, 400], 5, 5)
         resume = self.draw_button(260, 300, '>', surface)
         quit_btn = self.draw_button(610, 300, 'X',surface)
+        stat_btn = self.draw_button(950, 50, 'S',surface)
         surface.blit(self.header_font.render('MENU', True, 'white'),(210, 210))
         surface.blit(self.header_font.render('PLAY!', True, 'white'),(310, 275))
         surface.blit(self.header_font.render('QUIT', True, 'white'),(650, 275))
@@ -244,22 +136,8 @@ class Menu:
                 pygame.draw.circle(surface, (255, 198, 0),(260 + (i * 80), 450), 35, 5)
 
         screen.blit(surface, (0, 0))
-        return resume, changes, quit_btn
+        return resume, changes, quit_btn,stat_btn
 
-    def draw_stats_button(self, x, y):
-        clicked = False
-        rect = pygame.draw.rect(screen, (45, 89, 135), [x, y, 200, 50], 0, 10)
-        if rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                pygame.draw.rect(screen, (190, 35, 35), [x, y, 200, 50], 0, 10)
-                clicked = True
-            else:
-                pygame.draw.rect(screen, (190, 89, 135), [x, y, 200, 50], 0,
-                                 10)
-        pygame.draw.rect(screen, 'black', [x, y, 200, 50], 3, 10)
-        screen.blit(self.header_font.render('Show Stats', True, 'white'),
-                    (x + 20, y + 5))
-        return clicked
 
 
 # Main game class: runs the game loop and manages state
@@ -317,12 +195,14 @@ class Game:
                                              self.lives)
 
             if self.pause:
-                resume, changes, quit_btn = self.menu.draw_pause(self.choices)
+                resume, changes, quit_btn,stat_btn = self.menu.draw_pause(self.choices)
                 if resume:
                     self.pause = False
                 if quit_btn:
                     self.save_high_score()
                     break
+                if stat_btn:
+                    print("test")
                 self.choices = changes
 
             if self.new_level and not self.pause:
