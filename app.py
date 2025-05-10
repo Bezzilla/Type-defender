@@ -110,7 +110,7 @@ class Menu:
         screen.blit(self.header_font.render(f'Level: {level}', True, 'black'),(10, HEIGHT - 75))
         screen.blit(self.header_font.render(f'"{active_string}"', True, 'black'),(320, HEIGHT - 75))
         screen.blit(self.banner_font.render(f'Score: {score}', True, 'black'),(300, 10))
-        screen.blit( self.banner_font.render(f'Best: {high_score}', True, 'black'),(650, 10))
+        screen.blit( self.banner_font.render(f'Best: {high_score}', True, 'black'),(550, 10))
         screen.blit(self.banner_font.render(f'Lives: {lives}', True, 'black'),(10, 10))
 
         return self.draw_button(948, HEIGHT - 52, 'II', screen)
@@ -125,6 +125,7 @@ class Menu:
         surface.blit(self.header_font.render('MENU', True, 'white'),(210, 210))
         surface.blit(self.header_font.render('PLAY!', True, 'white'),(310, 275))
         surface.blit(self.header_font.render('QUIT', True, 'white'),(650, 275))
+        surface.blit(self.header_font.render('Statistic', True, 'black'),(760, 30))
         surface.blit(self.header_font.render('Active Letter Lengths:', True, 'white'),(210, 350))
 
         changes = copy.deepcopy(choices)
