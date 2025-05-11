@@ -52,8 +52,7 @@ class Tracker:
         elapsed = (time.time() - self.start_time) / 60
         if net:
             return self.correct_words / elapsed if elapsed > 0 else 0
-        return (
-                       self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
+        return (self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
 
     def calculate_kpm(self):
         elapsed = (time.time() - self.start_time) / 60
@@ -62,12 +61,10 @@ class Tracker:
     def accuracy(self, word_level=False):
         if word_level:
             total_attempts = self.correct_words + self.incorrect_words
-            return (
-                           self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
+            return (self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
         else:
             total_chars = self.total_keystrokes - self.backspace_count
-            return (
-                           self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
+            return (self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
 
     def error_rate(self):
         total_chars = self.total_keystrokes - self.backspace_count

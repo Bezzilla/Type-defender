@@ -21,7 +21,7 @@ class Game:
                         False]  # Word lengths toggle
         self.high_score_ = self.tracker.read_csv('statistics.csv')
         self.high_score = self.high_score_['Score'].max()
-
+        self.count = 0
 
     def check_answer(self):
         matched = False
@@ -118,12 +118,9 @@ class Game:
                 self.pause = True
 
             if self.lives <= 0:
-                pause_click = self.menu.draw_hud(self.level,
-                                                 self.active_string,
-                                                 self.score, self.high_score,
-                                                 self.lives)
-
-                self.tracker.save_to_csv(self.score)
+                if self.count == 0:
+                    self.tracker.save_to_csv(self.score)
+                self.count = 1
                 self.tracker.reset()
                 self.pause = True
                 self.level = 1
