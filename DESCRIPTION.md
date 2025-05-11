@@ -3,11 +3,10 @@
 Type Defender is an innovative action-typing hybrid game that challenges players to defend their base by quickly typing incoming word enemies. Combining the precision of typing tests with the urgency of tower defense gameplay, it offers a unique skill-building experience that tracks and analyzes player performance metrics.
 
 ## 🎯 Core Gameplay
-- **Defense Mechanic**: Type incoming words before they reach your base
-- **Progressive Difficulty**:
-  - Enemies get faster
-  - Spawn rate increases
-- **Performance Tracking**: Real-time WPM, accuracy, and error analytics
+- **Dynamic Enemy System**: Words spawn as approaching enemies with varying speeds and lengths
+- **Progressive Difficulty**: Enemies become faster and words grow longer as players advance
+- **Precision Defense**: Players must exactly match words (case-sensitive) to eliminate threats
+- **Base Health System**: Enemies reaching the base deal damage, ending the game at zero health
 
 
 ![Screenshot 2025-05-11 162957.png](screenshots%2Fgameplay%2FScreenshot%202025-05-11%20162957.png)
@@ -19,14 +18,9 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 <a href="https://ibb.co/TqnSr717"><img src="https://i.ibb.co/gFXp6fdf/Screenshot-2025-05-11-173515.png" alt="Screenshot-2025-05-11-173515" border="0"></a>
 
 
-## Core Gameplay Mechanics
-- **Dynamic Enemy System**: Words spawn as approaching enemies with varying speeds and lengths
-- **Progressive Difficulty**: Enemies become faster and words grow longer as players advance
-- **Precision Defense**: Players must exactly match words (case-sensitive) to eliminate threats
-- **Base Health System**: Enemies reaching the base deal damage, ending the game at zero health
 
-## Technical Architecture
-### OOP Implementation
+
+# OOP Implementation
 | Class        | Responsibilities                          | Key Methods                      |
 |--------------|------------------------------------------|----------------------------------|
 | `Game`       | Main game loop and state management      | `start()`, `end()`, `update()`   |
