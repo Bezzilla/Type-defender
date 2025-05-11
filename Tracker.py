@@ -1,5 +1,6 @@
 import time
 import csv
+import pandas as pd
 
 
 class Tracker:
@@ -52,7 +53,7 @@ class Tracker:
         if net:
             return self.correct_words / elapsed if elapsed > 0 else 0
         return (
-                           self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
+                       self.correct_words + self.incorrect_words) / elapsed if elapsed > 0 else 0
 
     def calculate_kpm(self):
         elapsed = (time.time() - self.start_time) / 60
@@ -62,11 +63,11 @@ class Tracker:
         if word_level:
             total_attempts = self.correct_words + self.incorrect_words
             return (
-                               self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
+                           self.correct_words / total_attempts) * 100 if total_attempts > 0 else 0
         else:
             total_chars = self.total_keystrokes - self.backspace_count
             return (
-                               self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
+                           self.correct_keystrokes / total_chars) * 100 if total_chars > 0 else 0
 
     def error_rate(self):
         total_chars = self.total_keystrokes - self.backspace_count
@@ -85,6 +86,10 @@ class Tracker:
 
     def reset(self):
         self.__init__()
+
+    @staticmethod
+    def read_csv(path):
+        return pd.read_csv(path)
 
     def save_to_csv(self, score):
         with open('statistics.csv', 'a', newline='') as f:
@@ -110,4 +115,3 @@ class Tracker:
                 self.words_shown,
                 self.words_missed
             ])
-
