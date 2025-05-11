@@ -17,7 +17,7 @@ class StatPage:
 
         # Convert numeric columns
         for col in self.df.columns:
-            self.df[col] = pd.to_numeric(self.df[col])
+            self.df[col] = pd.to_numeric(self.df[col], errors='ignore')
 
         # Variables
         self.metric_var = tk.StringVar(value=self.df.columns[0])
@@ -50,7 +50,7 @@ class StatPage:
         )
         metric_dropdown.grid(row=0, column=1, padx=5)
 
-        # Secondary metric
+        # Secondary metric (for comparison plots)
         tk.Label(control_frame, text="Secondary Metric:").grid(row=0, column=2,
                                                                padx=5)
         second_metric_dropdown = ttk.Combobox(
@@ -156,22 +156,29 @@ class StatPage:
             ax.set_title(f"Distribution Analysis of {metric}")
 
         elif graph_type == "Pie Chart":
-            if len(self.df) > 10:
-                ax.text(0.5, 0.5, "Too many sessions for pie chart",
-                        ha='center', va='center')
-                ax.set_title("Pie chart not suitable for >10 sessions")
+            # Get the latest 10 sessions
+            latest_data = self.df.tail(10)
+            if len(latest_data) > 0:
+                # Create labels with session numbers
+                labels = [f"Session {i}" for i in latest_data.index]
+                ax.pie(latest_data[metric], labels=labels, autopct='%1.1f%%')
+                ax.set_title(f"{metric} Distribution (Latest 10 Sessions)")
             else:
-                ax.pie(self.df[metric], labels=self.df.index,
-                       autopct='%1.1f%%')
-                ax.set_title(f"{metric} Distribution by Session")
+                ax.text(0.5, 0.5, "No data available", ha='center',
+                        va='center')
+                ax.set_title("No Data Available")
 
+        # Common formatting
         if graph_type not in ["Pie Chart", "Box Plot"]:
             ax.set_xlabel("Session")
             ax.set_ylabel(metric)
         ax.grid(True)
 
+        # Embed plot in Tkinter
         self.canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
 
+if __name__ == "__main__":
+    StatPage()
