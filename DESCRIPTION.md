@@ -16,7 +16,8 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 ![Screenshot 2025-05-11 164012.png](screenshots%2Fvisualization%2FScreenshot%202025-05-11%20164012.png)
 ![Screenshot 2025-05-11 164147.png](screenshots%2Fvisualization%2FScreenshot%202025-05-11%20164147.png)
 ## UML Diagram
-![img.png](img.png)
+<a href="https://ibb.co/TqnSr717"><img src="https://i.ibb.co/gFXp6fdf/Screenshot-2025-05-11-173515.png" alt="Screenshot-2025-05-11-173515" border="0"></a>
+
 
 ## Core Gameplay Mechanics
 - **Dynamic Enemy System**: Words spawn as approaching enemies with varying speeds and lengths
