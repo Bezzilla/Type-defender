@@ -85,5 +85,3 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 | `Words_Missed` | Enemies reaching base | Defense failure rate |
 | `Average_Word_Length` | `sum(len(word)) / Words_Shown` | Complexity measure |
 
-GitHub   
--> [Type Defender](https://github.com/Bezzilla/Type-defender)
