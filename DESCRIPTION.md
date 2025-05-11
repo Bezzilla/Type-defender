@@ -1,5 +1,4 @@
-# Type Defender: Action Typing Game
-
+# Type Defender
 ## 🚀 Project Overview
 Type Defender is an innovative action-typing hybrid game that challenges players to defend their base by quickly typing incoming word enemies. Combining the precision of typing tests with the urgency of tower defense gameplay, it offers a unique skill-building experience that tracks and analyzes player performance metrics.
 
