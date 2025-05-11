@@ -6,8 +6,7 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 ## 🎯 Core Gameplay
 - **Defense Mechanic**: Type incoming words before they reach your base
 - **Progressive Difficulty**:
-  - Enemies get faster 
-
+  - Enemies get faster
   - Spawn rate increases
 - **Performance Tracking**: Real-time WPM, accuracy, and error analytics
 
