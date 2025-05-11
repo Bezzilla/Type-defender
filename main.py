@@ -17,7 +17,7 @@ class Game:
         self.word_objects = []  # List of active Enemy objects
         self.pause = True
         self.new_level = True
-        self.choices = [False, False, True, True, True, False,
+        self.choices = [False, False, True, True, False, False,
                         False]  # Word lengths toggle
         self.high_score_ = self.tracker.read_csv('statistics.csv')
         self.high_score = self.high_score_['Score'].max()

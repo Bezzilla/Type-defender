@@ -86,3 +86,5 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 | `Words_Missed` | Enemies reaching base | Defense failure rate |
 | `Average_Word_Length` | `sum(len(word)) / Words_Shown` | Complexity measure |
 
+Youtube   
+-> [Type Defender](https://youtu.be/Cqm6bB5BPrU?si=SGA76VdmUJK0rE26)
