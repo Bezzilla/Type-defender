@@ -43,7 +43,7 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 |--------|---------|-------------|
 | **Net WPM** | `(Correct_Keystrokes / 5) / (Total_Time_Played / 60)` | "True" typing speed excluding errors |
 | **Gross WPM** | `(Characters_Typed / 5) / (Total_Time_Played / 60)` | Raw speed including errors |
-| **KPM** | `(Correct_Keystrokes / 1000) / (Total_Time_Played / 60)` | Keystrokes per minute (thousands) |
+| **KPM** | `(Correct_Keystrokes / 1000) / (Total_Time_Played / 60)` | Keystrokes per minute |
 
 ## Accuracy Measurements
 
@@ -61,7 +61,7 @@ Type Defender is an innovative action-typing hybrid game that challenges players
 | `Total_Words_Typed` | Count | Sum of correct + incorrect words |
 | `Correct_Words` | Count | Perfectly typed words |
 | `Incorrect_Words` | Count | Words with ≥1 error |
-| `Characters_Typed` | Count | All keys pressed (incl. backspace) |
+| `Characters_Typed` | Count | All keys pressed (include backspace) |
 
 ## Keystroke Analysis
 
